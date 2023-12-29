@@ -60,7 +60,7 @@ class ProductResource extends Resource
                     ->maxLength(65535),
 
                 TextInput::make('amount')
-                    ->mask('999999')
+                    ->mask('99999999999999999999')
                     ->numeric()
                     ->prefix('$'),
             ]);
