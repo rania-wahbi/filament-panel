@@ -23,11 +23,6 @@ return new class extends Migration
             $table->decimal('price', 20, 3);
             $table->text('description')->nullable();
             $table->tinyInteger('status')->default(0);
-            $table->tinyInteger('marketable')->default(1)->comment('1 => marketable, 0 => is not marketable');
-            $table->string('tags');
-            $table->tinyInteger('sold_number')->default(0);
-            $table->tinyInteger('frozen_number')->default(0);
-            $table->tinyInteger('marketable_number')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
