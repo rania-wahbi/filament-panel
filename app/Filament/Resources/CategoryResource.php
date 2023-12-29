@@ -24,6 +24,9 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'System Management';
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,8 +41,6 @@ class CategoryResource extends Resource
                     ->image()
                     ->imageEditor()
                     ->reorderable()
-                    ->circular()
-
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('status')
                     ->required(),
@@ -51,7 +52,7 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->reorderable('order_column')
+            ->reorderable('sort')
             ->columns([
                 Tables\Columns\TextColumn::make('parent_id')
                     ->numeric()

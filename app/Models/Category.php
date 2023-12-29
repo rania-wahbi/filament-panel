@@ -19,8 +19,7 @@ class Category extends Model implements HasMedia
         'parent_id',
         'status',
         'show_in_menu',
-        
-        'order_column'
+        'sort'
 
     ];
 

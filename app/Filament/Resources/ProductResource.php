@@ -3,22 +3,27 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Support\RawJs;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\KeyValue;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use App\Filament\Resources\ProductResource\RelationManagers;
 
 class ProductResource extends Resource
 {
@@ -26,16 +31,23 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'System Management';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('category_id')
+                Select::make('category_id')
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
-                    ->required(),
-                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('parent_id')
+                            ->numeric(),
+                        TextInput::make('name'),
+                    ]),
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
                 SpatieMediaLibraryFileUpload::make('image')
@@ -44,15 +56,13 @@ class ProductResource extends Resource
                     ->imageEditor()
                     ->reorderable()
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->maxLength(65535),
+
                 TextInput::make('amount')
-                    ->mask(RawJs::make('$money($input)'))
-                    // ->stripCharacters(',')
+                    ->mask('999999')
                     ->numeric()
                     ->prefix('$'),
-                    ToggleColumn::make('status'),
-
             ]);
     }
 
@@ -70,8 +80,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('price')
                     ->money()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
+                ToggleColumn::make('status'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -104,6 +113,16 @@ class ProductResource extends Resource
             ]);
     }
 
+    // public static function infolist(Infolist $infolist): Infolist
+    // {
+    //     return $infolist
+    //         ->schema([
+    //             TextEntry::make('title')
+
+    //         ]);
+    // }
+
+
     public static function getRelations(): array
     {
         return [
@@ -116,7 +135,7 @@ class ProductResource extends Resource
         return [
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
-            'view' => Pages\ViewProduct::route('/{record}'),
+            // 'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
